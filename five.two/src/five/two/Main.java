@@ -2,9 +2,7 @@ package five.two;
 import java.util.Arrays;
 import java.util.Random;
 
-
 public class Main {
-
 
     public static int[] RandomizedArray(int size, int start, int end) {
         Random rand = new Random();
@@ -14,7 +12,6 @@ public class Main {
         }
         return arr;
     }
-
 
     public static void BubbleSort(int[] arr) {
         int n = arr.length;
@@ -29,7 +26,7 @@ public class Main {
                     swapped = true;
                 }
             }
-            if (!swapped) break; 
+            if (!swapped) break;
         }
     }
 
@@ -42,30 +39,50 @@ public class Main {
                     minIndex = j;
                 }
             }
-
             int temp = arr[minIndex];
             arr[minIndex] = arr[i];
             arr[i] = temp;
         }
     }
 
+    public static void InsertionSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 1; i < n; i++) {
+            int key = arr[i];
+            int j = i - 1;
+
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+            arr[j + 1] = key;
+        }
+    }
+
     public static void main(String[] args) {
-        int size = 100000; 
+        int size = 100000;
         int startRange = 1;
         int endRange = 1000000;
 
         int[] originalArray = RandomizedArray(size, startRange, endRange);
+
         int[] arrayForBubble = Arrays.copyOf(originalArray, originalArray.length);
         int[] arrayForSelection = Arrays.copyOf(originalArray, originalArray.length);
+        int[] arrayForInsertion = Arrays.copyOf(originalArray, originalArray.length);
+
         long startBubble = System.currentTimeMillis();
         BubbleSort(arrayForBubble);
         long finishBubble = System.currentTimeMillis();
-        long timeBubble = finishBubble - startBubble;
-        System.out.println("Sorting a random array size of " + size + " took Bubble Sort " + timeBubble + "ms to complete.");
+        System.out.println("Sorting a random array size of " + size + " took Bubble Sort " + (finishBubble - startBubble) + "ms to complete.");
+
         long startSelection = System.currentTimeMillis();
         SelectionSort(arrayForSelection);
         long finishSelection = System.currentTimeMillis();
-        long timeSelection = finishSelection - startSelection;
-        System.out.println("Sorting a random array size of " + size + " took Selection Sort " + timeSelection + "ms to complete.");
+        System.out.println("Sorting a random array size of " + size + " took Selection Sort " + (finishSelection - startSelection) + "ms to complete.");
+
+        long startInsertion = System.currentTimeMillis();
+        InsertionSort(arrayForInsertion);
+        long finishInsertion = System.currentTimeMillis();
+        System.out.println("Sorting a random array size of " + size + " took Insertion Sort " + (finishInsertion - startInsertion) + "ms to complete.");
     }
 }
