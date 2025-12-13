@@ -1,49 +1,58 @@
 package tenone;
-
 public class Main {
     
-
-    static class SinglyLinkedList {
+ 
+    static class DoublyLinkedList {
         
+    
         private class Node {
             Object data;
+            Node prev;
             Node next;
             
             Node(Object data) {
                 this.data = data;
+                this.prev = null;
                 this.next = null;
             }
         }
         
         private Node head;
+        private Node tail;
         private int size;
         
-        public SinglyLinkedList() {
+      
+        public DoublyLinkedList() {
             this.head = null;
+            this.tail = null;
             this.size = 0;
         }
         
-        
+   
         public void append(Object value) {
             Node newNode = new Node(value);
             
             if (head == null) {
-                head = newNode;
+                head = tail = newNode;
             } else {
-                Node current = head;
-                while (current.next != null) {
-                    current = current.next;
-                }
-                current.next = newNode;
+                tail.next = newNode;
+                newNode.prev = tail;
+                tail = newNode;
             }
             size++;
         }
         
-    
+     
         public void prepend(Object value) {
             Node newNode = new Node(value);
-            newNode.next = head;
-            head = newNode;
+            
+            if (head == null) {
+                head = tail = newNode;
+            } else {
+                newNode.next = head;
+                head.prev = newNode;
+                head = newNode;
+            }
             size++;
         }
         
@@ -55,6 +64,13 @@ public class Main {
                 if (current.data.equals(target)) {
                     Node newNode = new Node(value);
                     newNode.next = current.next;
+                    newNode.prev = current;
+                    
+                    if (current.next != null) {
+                        current.next.prev = newNode;
+                    } else {
+                        tail = newNode;
+                    }
                     current.next = newNode;
                     size++;
                     return;
@@ -64,7 +80,7 @@ public class Main {
             System.out.println("Target " + target + " not found");
         }
         
-        // inserts a new node before the target node
+   
         public void insertBefore(Object target, Object value) {
             if (head == null) {
                 System.out.println("List is empty");
@@ -77,11 +93,16 @@ public class Main {
             }
             
             Node current = head;
-            while (current.next != null) {
-                if (current.next.data.equals(target)) {
+            while (current != null) {
+                if (current.data.equals(target)) {
                     Node newNode = new Node(value);
-                    newNode.next = current.next;
-                    current.next = newNode;
+                    newNode.next = current;
+                    newNode.prev = current.prev;
+                    
+                    if (current.prev != null) {
+                        current.prev.next = newNode;
+                    }
+                    current.prev = newNode;
                     size++;
                     return;
                 }
@@ -90,46 +111,61 @@ public class Main {
             System.out.println("Target " + target + " not found");
         }
         
-        // deletes the first node containing the value
-        public void delete(Object value) {
-            if (head == null) return;
-            
-            if (head.data.equals(value)) {
-                head = head.next;
-                size--;
-                return;
-            }
-            
+
+        public void removeAfter(Object target) {
             Node current = head;
-            while (current.next != null) {
-                if (current.next.data.equals(value)) {
-                    current.next = current.next.next;
+            
+            while (current != null) {
+                if (current.data.equals(target)) {
+                    if (current.next == null) {
+                        System.out.println("No node after " + target);
+                        return;
+                    }
+                    
+                    Node toRemove = current.next;
+                    current.next = toRemove.next;
+                    
+                    if (toRemove.next != null) {
+                        toRemove.next.prev = current;
+                    } else {
+                        tail = current;
+                    }
                     size--;
                     return;
                 }
                 current = current.next;
             }
+            System.out.println("Target " + target + " not found");
         }
         
-        // removes the last node
-        public void remove() {
-            if (head == null) return;
-            
-            if (head.next == null) {
-                head = null;
-                size--;
-                return;
-            }
-            
+      
+        public void removeBefore(Object target) {
             Node current = head;
-            while (current.next.next != null) {
+            
+            while (current != null) {
+                if (current.data.equals(target)) {
+                    if (current.prev == null) {
+                        System.out.println("No node before " + target);
+                        return;
+                    }
+                    
+                    Node toRemove = current.prev;
+                    if (toRemove.prev != null) {
+                        toRemove.prev.next = current;
+                        current.prev = toRemove.prev;
+                    } else {
+                        head = current;
+                        current.prev = null;
+                    }
+                    size--;
+                    return;
+                }
                 current = current.next;
             }
-            current.next = null;
-            size--;
+            System.out.println("Target " + target + " not found");
         }
         
-        // searches for a value in the list
+    
         public boolean search(Object value) {
             Node current = head;
             while (current != null) {
@@ -141,40 +177,54 @@ public class Main {
             return false;
         }
         
-        // returns the length of the list
-        public int length() {
-            return size;
-        }
-        
-        // checks if the list is empty
-        public boolean isEmpty() {
-            return head == null;
-        }
-        
- 
+  
         public void sort() {
             if (head == null || head.next == null) return;
             
-            boolean swapped;
-            do {
-                swapped = false;
-                Node current = head;
+            Node current = head.next;
+            
+            while (current != null) {
+                Node nextNode = current.next;
+                Object key = current.data;
+                Node position = current.prev;
                 
-                while (current.next != null) {
-                    // Compare current node with next node
-                    if (compare(current.data, current.next.data) > 0) {
-                        // Swap data
-                        Object temp = current.data;
-                        current.data = current.next.data;
-                        current.next.data = temp;
-                        swapped = true;
-                    }
-                    current = current.next;
+    
+                while (position != null && compare(position.data, key) > 0) {
+                    position = position.prev;
                 }
-            } while (swapped);
+                
+          
+                if (current.prev != null) {
+                    current.prev.next = current.next;
+                }
+                if (current.next != null) {
+                    current.next.prev = current.prev;
+                } else {
+                    tail = current.prev;
+                }
+                
+             
+                if (position == null) {
+                    current.next = head;
+                    current.prev = null;
+                    head.prev = current;
+                    head = current;
+                } else {
+                    current.next = position.next;
+                    current.prev = position;
+                    if (position.next != null) {
+                        position.next.prev = current;
+                    } else {
+                        tail = current;
+                    }
+                    position.next = current;
+                }
+                
+                current = nextNode;
+            }
         }
         
-        // Helper method to compare two objects
+    
         private int compare(Object a, Object b) {
             if (a instanceof Integer && b instanceof Integer) {
                 return ((Integer) a).compareTo((Integer) b);
@@ -184,7 +234,12 @@ public class Main {
             return 0;
         }
         
-        // Prints the list
+   
+        public int length() {
+            return size;
+        }
+        
+      
         public void print() {
             if (head == null) {
                 System.out.println("List is empty");
@@ -195,87 +250,117 @@ public class Main {
             while (current != null) {
                 System.out.print(current.data);
                 if (current.next != null) {
-                    System.out.print(" -> ");
+                    System.out.print(" <-> ");
                 }
                 current = current.next;
+            }
+            System.out.println();
+        }
+        
+       
+        public void printReverse() {
+            if (tail == null) {
+                System.out.println("List is empty");
+                return;
+            }
+            
+            Node current = tail;
+            while (current != null) {
+                System.out.print(current.data);
+                if (current.prev != null) {
+                    System.out.print(" <-> ");
+                }
+                current = current.prev;
             }
             System.out.println();
         }
     }
     
     public static void main(String[] args) {
-        SinglyLinkedList list = new SinglyLinkedList();
+        DoublyLinkedList list = new DoublyLinkedList();
         
-        System.out.println("=== Singly Linked List Test Cases ===\n");
+        System.out.println("=== Doubly Linked List Test Cases ===\n");
         
         // Test 1: Append values
-        System.out.println("Test 1: Appending values 5, 2, 9, 1");
-        list.append(5);
-        list.append(2);
-        list.append(9);
-        list.append(1);
-        System.out.print("List: ");
+        System.out.println("Test 1: Appending values 15, 8, 23, 4, 12");
+        list.append(15);
+        list.append(8);
+        list.append(23);
+        list.append(4);
+        list.append(12);
+        System.out.print("List (Forward): ");
         list.print();
+        System.out.print("List (Backward): ");
+        list.printReverse();
         System.out.println();
         
         // Test 2: Prepend value
-        System.out.println("Test 2: Prepending value 7");
-        list.prepend(7);
+        System.out.println("Test 2: Prepending value 30");
+        list.prepend(30);
         System.out.print("List: ");
         list.print();
         System.out.println();
         
-        // Test 3: Length
-        System.out.println("Test 3: Get length");
-        System.out.println("Length: " + list.length());
+        // Test 3: Insert after
+        System.out.println("Test 3: Insert 20 after 15");
+        list.insertAfter(15, 20);
+        System.out.print("List: ");
+        list.print();
         System.out.println();
         
-        // Test 4: Search
-        System.out.println("Test 4: Search for value 9");
-        System.out.println("Found 9: " + list.search(9));
+        // Test 4: Insert before
+        System.out.println("Test 4: Insert 18 before 23");
+        list.insertBefore(23, 18);
+        System.out.print("List: ");
+        list.print();
+        System.out.println();
+        
+        // Test 5: Search
+        System.out.println("Test 5: Search for values");
+        System.out.println("Found 23: " + list.search(23));
         System.out.println("Found 100: " + list.search(100));
         System.out.println();
         
-        // Test 5: Insert after
-        System.out.println("Test 5: Insert 6 after 5");
-        list.insertAfter(5, 6);
+        // Test 6: Remove after
+        System.out.println("Test 6: Remove node after 15");
+        list.removeAfter(15);
         System.out.print("List: ");
         list.print();
         System.out.println();
         
-        // Test 6: Insert before
-        System.out.println("Test 6: Insert 8 before 9");
-        list.insertBefore(9, 8);
+        // Test 7: Remove before
+        System.out.println("Test 7: Remove node before 23");
+        list.removeBefore(23);
         System.out.print("List: ");
         list.print();
         System.out.println();
         
-        // Test 7: Delete
-        System.out.println("Test 7: Delete value 2");
-        list.delete(2);
-        System.out.print("List: ");
-        list.print();
+        // Test 8: Length
+        System.out.println("Test 8: Get list length");
+        System.out.println("Length: " + list.length());
         System.out.println();
         
-        // Test 8: Remove last
-        System.out.println("Test 8: Remove last node");
-        list.remove();
-        System.out.print("List: ");
+        // Test 9: Sort using Insertion Sort
+        System.out.println("Test 9: Sort the list using Insertion Sort");
+        System.out.print("Before sort: ");
         list.print();
-        System.out.println();
-        
-        // Test 9: Sort
-        System.out.println("Test 9: Sort the list");
         list.sort();
-        System.out.print("List: ");
+        System.out.print("After sort: ");
         list.print();
+        System.out.print("After sort (Backward): ");
+        list.printReverse();
         System.out.println();
         
-        System.out.println("Test 10: Insert 6 after 5");
-        list.insertAfter(5, 6);
-        System.out.print("List: ");
+        // Test 10: Additional operations
+        System.out.println("Test 10: Add more values and demonstrate bidirectional traversal");
+        list.append(25);
+        list.prepend(2);
+        System.out.print("List (Forward): ");
         list.print();
+        System.out.print("List (Backward): ");
+        list.printReverse();
         System.out.println();
         
+        System.out.println("=== All Tests Completed ===");
     }
 }
