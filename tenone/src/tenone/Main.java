@@ -341,24 +341,18 @@ public class Main {
         System.out.println();
         
         // Test 9: Sort using Insertion Sort
-        System.out.println("Test 9: Sort the list using Insertion Sort");
-        System.out.print("Before sort: ");
+        System.out.println("Test 4: Insert 18 before 23");
+        list.insertBefore(23, 18);
+        System.out.print("List: ");
         list.print();
-        list.sort();
-        System.out.print("After sort: ");
-        list.print();
-        System.out.print("After sort (Backward): ");
-        list.printReverse();
         System.out.println();
         
+        
         // Test 10: Additional operations
-        System.out.println("Test 10: Add more values and demonstrate bidirectional traversal");
-        list.append(25);
-        list.prepend(2);
-        System.out.print("List (Forward): ");
-        list.print();
-        System.out.print("List (Backward): ");
-        list.printReverse();
+        System.out.println("Test 10: Search for values");
+        System.out.println("Found 23: " + list.search(23));
+        System.out.println("Found 100: " + list.search(100));
         System.out.println();
+        
             }
 }
