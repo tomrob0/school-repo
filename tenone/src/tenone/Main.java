@@ -1,11 +1,11 @@
 package tenone;
 public class Main {
     
- 
-    static class DoublyLinkedList {
+
+    static class MyDoublyLinkedList {
         
-    
-        private class Node {
+       
+        protected class Node {
             Object data;
             Node prev;
             Node next;
@@ -17,18 +17,18 @@ public class Main {
             }
         }
         
-        private Node head;
-        private Node tail;
-        private int size;
+        protected Node head;
+        protected Node tail;
+        protected int size;
         
-      
-        public DoublyLinkedList() {
+       
+        public MyDoublyLinkedList() {
             this.head = null;
             this.tail = null;
             this.size = 0;
         }
         
-   
+        
         public void append(Object value) {
             Node newNode = new Node(value);
             
@@ -42,7 +42,7 @@ public class Main {
             size++;
         }
         
-     
+      
         public void prepend(Object value) {
             Node newNode = new Node(value);
             
@@ -56,190 +56,56 @@ public class Main {
             size++;
         }
         
+       
+        public Object removeLast() {
+            if (tail == null) return null;
+            
+            Object data = tail.data;
+            if (head == tail) {
+                head = tail = null;
+            } else {
+                tail = tail.prev;
+                tail.next = null;
+            }
+            size--;
+            return data;
+        }
+        
+       
+        public Object removeFirst() {
+            if (head == null) return null;
+            
+            Object data = head.data;
+            if (head == tail) {
+                head = tail = null;
+            } else {
+                head = head.next;
+                head.prev = null;
+            }
+            size--;
+            return data;
+        }
+        
+       
+        public Object peekFirst() {
+            return head != null ? head.data : null;
+        }
+        
      
-        public void insertAfter(Object target, Object value) {
-            Node current = head;
-            
-            while (current != null) {
-                if (current.data.equals(target)) {
-                    Node newNode = new Node(value);
-                    newNode.next = current.next;
-                    newNode.prev = current;
-                    
-                    if (current.next != null) {
-                        current.next.prev = newNode;
-                    } else {
-                        tail = newNode;
-                    }
-                    current.next = newNode;
-                    size++;
-                    return;
-                }
-                current = current.next;
-            }
-            System.out.println("Target " + target + " not found");
-        }
-        
-   
-        public void insertBefore(Object target, Object value) {
-            if (head == null) {
-                System.out.println("List is empty");
-                return;
-            }
-            
-            if (head.data.equals(target)) {
-                prepend(value);
-                return;
-            }
-            
-            Node current = head;
-            while (current != null) {
-                if (current.data.equals(target)) {
-                    Node newNode = new Node(value);
-                    newNode.next = current;
-                    newNode.prev = current.prev;
-                    
-                    if (current.prev != null) {
-                        current.prev.next = newNode;
-                    }
-                    current.prev = newNode;
-                    size++;
-                    return;
-                }
-                current = current.next;
-            }
-            System.out.println("Target " + target + " not found");
-        }
-        
-
-        public void removeAfter(Object target) {
-            Node current = head;
-            
-            while (current != null) {
-                if (current.data.equals(target)) {
-                    if (current.next == null) {
-                        System.out.println("No node after " + target);
-                        return;
-                    }
-                    
-                    Node toRemove = current.next;
-                    current.next = toRemove.next;
-                    
-                    if (toRemove.next != null) {
-                        toRemove.next.prev = current;
-                    } else {
-                        tail = current;
-                    }
-                    size--;
-                    return;
-                }
-                current = current.next;
-            }
-            System.out.println("Target " + target + " not found");
+        public Object peekLast() {
+            return tail != null ? tail.data : null;
         }
         
       
-        public void removeBefore(Object target) {
-            Node current = head;
-            
-            while (current != null) {
-                if (current.data.equals(target)) {
-                    if (current.prev == null) {
-                        System.out.println("No node before " + target);
-                        return;
-                    }
-                    
-                    Node toRemove = current.prev;
-                    if (toRemove.prev != null) {
-                        toRemove.prev.next = current;
-                        current.prev = toRemove.prev;
-                    } else {
-                        head = current;
-                        current.prev = null;
-                    }
-                    size--;
-                    return;
-                }
-                current = current.next;
-            }
-            System.out.println("Target " + target + " not found");
+        public boolean isEmpty() {
+            return size == 0;
         }
-        
-    
-        public boolean search(Object value) {
-            Node current = head;
-            while (current != null) {
-                if (current.data.equals(value)) {
-                    return true;
-                }
-                current = current.next;
-            }
-            return false;
-        }
-        
-  
-        public void sort() {
-            if (head == null || head.next == null) return;
-            
-            Node current = head.next;
-            
-            while (current != null) {
-                Node nextNode = current.next;
-                Object key = current.data;
-                Node position = current.prev;
-                
-    
-                while (position != null && compare(position.data, key) > 0) {
-                    position = position.prev;
-                }
-                
-          
-                if (current.prev != null) {
-                    current.prev.next = current.next;
-                }
-                if (current.next != null) {
-                    current.next.prev = current.prev;
-                } else {
-                    tail = current.prev;
-                }
-                
-             
-                if (position == null) {
-                    current.next = head;
-                    current.prev = null;
-                    head.prev = current;
-                    head = current;
-                } else {
-                    current.next = position.next;
-                    current.prev = position;
-                    if (position.next != null) {
-                        position.next.prev = current;
-                    } else {
-                        tail = current;
-                    }
-                    position.next = current;
-                }
-                
-                current = nextNode;
-            }
-        }
-        
-    
-        private int compare(Object a, Object b) {
-            if (a instanceof Integer && b instanceof Integer) {
-                return ((Integer) a).compareTo((Integer) b);
-            } else if (a instanceof String && b instanceof String) {
-                return ((String) a).compareTo((String) b);
-            }
-            return 0;
-        }
-        
-   
-        public int length() {
+       
+        public int size() {
             return size;
         }
         
-      
+       
         public void print() {
             if (head == null) {
                 System.out.println("List is empty");
@@ -256,103 +122,202 @@ public class Main {
             }
             System.out.println();
         }
+    }
+    
+   
+    interface Stack {
+        void push(Object value);
+        Object pop();
+        Object peek();
+    }
+    
+   
+    interface Queue {
+        void enqueue(Object value);
+        Object dequeue();
+        Object front();
+    }
+    
+  
+    static class MyStack extends MyDoublyLinkedList implements Stack {
+        
+      
+        public void push(Object value) {
+            append(value);
+        }
+        
+        
+        public Object pop() {
+            if (isEmpty()) {
+                System.out.println("Stack is empty!");
+                return null;
+            }
+            return removeLast();
+        }
+        
+    
+        public Object peek() {
+            if (isEmpty()) {
+                System.out.println("Stack is empty!");
+                return null;
+            }
+            return peekLast();
+        }
+        
+        
+        public void printStack() {
+            System.out.print("Stack (bottom to top): ");
+            print();
+        }
+    }
+    
+    
+    static class MyQueue extends MyDoublyLinkedList implements Queue {
+        
+        
+        public void enqueue(Object value) {
+            append(value);
+        }
+        
+      
+        public Object dequeue() {
+            if (isEmpty()) {
+                System.out.println("Queue is empty!");
+                return null;
+            }
+            return removeFirst();
+        }
+        
+        
+        public Object front() {
+            if (isEmpty()) {
+                System.out.println("Queue is empty!");
+                return null;
+            }
+            return peekFirst();
+        }
         
        
-        public void printReverse() {
-            if (tail == null) {
-                System.out.println("List is empty");
-                return;
-            }
-            
-            Node current = tail;
-            while (current != null) {
-                System.out.print(current.data);
-                if (current.prev != null) {
-                    System.out.print(" <-> ");
-                }
-                current = current.prev;
-            }
-            System.out.println();
+        public void printQueue() {
+            System.out.print("Queue (front to rear): ");
+            print();
         }
     }
     
     public static void main(String[] args) {
-        DoublyLinkedList list = new DoublyLinkedList();
+        System.out.println("=".repeat(60));
+        System.out.println("Stack and Queue Implementation using Doubly Linked List");
+        System.out.println("=".repeat(60));
         
-        System.out.println("=== Doubly Linked List Test Cases ===\n");
+       
+       
         
-        // Test 1: Append values
-        System.out.println("Test 1: Appending values 15, 8, 23, 4, 12");
-        list.append(15);
-        list.append(8);
-        list.append(23);
-        list.append(4);
-        list.append(12);
-        System.out.print("List (Forward): ");
-        list.print();
-        System.out.print("List (Backward): ");
-        list.printReverse();
-        System.out.println();
+        MyStack stack = new MyStack();
         
-        // Test 2: Prepend value
-        System.out.println("Test 2: Prepending value 30");
-        list.prepend(30);
-        System.out.print("List: ");
-        list.print();
-        System.out.println();
-        
-        // Test 3: Insert after
-        System.out.println("Test 3: Insert 20 after 15");
-        list.insertAfter(15, 20);
-        System.out.print("List: ");
-        list.print();
-        System.out.println();
-        
-        // Test 4: Insert before
-        System.out.println("Test 4: Insert 18 before 23");
-        list.insertBefore(23, 18);
-        System.out.print("List: ");
-        list.print();
-        System.out.println();
-        
-        // Test 5: Search
-        System.out.println("Test 5: Search for values");
-        System.out.println("Found 23: " + list.search(23));
-        System.out.println("Found 100: " + list.search(100));
-        System.out.println();
-        
-        // Test 6: Remove after
-        System.out.println("Test 6: Remove node after 15");
-        list.removeAfter(15);
-        System.out.print("List: ");
-        list.print();
-        System.out.println();
-        
-        // Test 7: Remove before
-        System.out.println("Test 7: Remove node before 23");
-        list.removeBefore(23);
-        System.out.print("List: ");
-        list.print();
-        System.out.println();
-        
-        // Test 8: Length
-        System.out.println("Test 8: Get list length");
-        System.out.println("Length: " + list.length());
-        System.out.println();
-        
-        // Test 9: Sort using Insertion Sort
-        System.out.println("Test 4: Insert 18 before 23");
-        list.insertBefore(23, 18);
-        System.out.print("List: ");
-        list.print();
+      
+        System.out.println("Test 1: Push elements 10, 20, 30, 40, 50");
+        stack.push(10);
+        stack.push(20);
+        stack.push(30);
+        stack.push(40);
+        stack.push(50);
+        stack.printStack();
+        System.out.println("Stack size: " + stack.size());
         System.out.println();
         
         
-        // Test 10: Additional operations
-        System.out.println("Test 10: Search for values");
-        System.out.println("Found 23: " + list.search(23));
-        System.out.println("Found 100: " + list.search(100));
+        System.out.println("Test 2: Peek at top element");
+        System.out.println("Top element: " + stack.peek());
+        stack.printStack();
         System.out.println();
         
-            }
+  
+        System.out.println("Test 3: Pop 2 elements");
+        System.out.println("Popped: " + stack.pop());
+        System.out.println("Popped: " + stack.pop());
+        stack.printStack();
+        System.out.println("Stack size: " + stack.size());
+        System.out.println();
+        
+       
+        System.out.println("Test 4: Push 60 and 70");
+        stack.push(60);
+        stack.push(70);
+        stack.printStack();
+        System.out.println();
+        
+       
+        System.out.println("Test 5: Pop all elements");
+        while (!stack.isEmpty()) {
+            System.out.println("Popped: " + stack.pop());
+        }
+        stack.printStack();
+        System.out.println();
+        
+        
+    
+        
+        MyQueue queue = new MyQueue();
+        
+     
+        System.out.println("Test 6: Enqueue elements A, B, C, D, E");
+        queue.enqueue("A");
+        queue.enqueue("B");
+        queue.enqueue("C");
+        queue.enqueue("D");
+        queue.enqueue("E");
+        queue.printQueue();
+        System.out.println("Queue size: " + queue.size());
+        System.out.println();
+        
+      
+        System.out.println("Test 7: Peek at front element");
+        System.out.println("Front element: " + queue.front());
+        queue.printQueue();
+        System.out.println();
+        
+        
+        System.out.println("Test 8: Dequeue 2 elements");
+        System.out.println("Dequeued: " + queue.dequeue());
+        System.out.println("Dequeued: " + queue.dequeue());
+        queue.printQueue();
+        System.out.println("Queue size: " + queue.size());
+        System.out.println();
+        
+      
+        System.out.println("Test 9: Enqueue F and G");
+        queue.enqueue("F");
+        queue.enqueue("G");
+        queue.printQueue();
+        System.out.println();
+        
+      
+            System.out.println("Test 10: Peek at front element");
+            System.out.println("Front element: " + queue.front());
+            queue.printQueue();
+            System.out.println();
+            
+            
+        
+           
+        MyStack stack2 = new MyStack();
+        MyQueue queue2 = new MyQueue();
+        
+        System.out.println("Adding 1, 2, 3, 4, 5 to both Stack and Queue");
+        for (int i = 1; i <= 5; i++) {
+            stack2.push(i);
+            queue2.enqueue(i);
+        }
+        
+        System.out.println("Stack");
+        while (!stack2.isEmpty()) {
+            System.out.print(stack2.pop() + " ");
+        }
+        
+        System.out.println("Queue ");
+        while (!queue2.isEmpty()) {
+            System.out.print(queue2.dequeue() + " ");
+        }
+        
+       }
 }
