@@ -360,7 +360,5 @@ public class Main {
         System.out.print("List (Backward): ");
         list.printReverse();
         System.out.println();
-        
-        System.out.println("=== All Tests Completed ===");
-    }
+            }
 }
